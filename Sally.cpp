@@ -443,9 +443,31 @@ void Sally::doSWAP(Sally *Sptr) {
 }
 
 void Sally::doROT(Sally *Sptr) {
+    Token p;
+    Token q;
+    Token r;
+
     if (Sptr->params.size() < 3) {
         throw out_of_range("Need atleast three parameters for SWAP");
     }
+
+    //take two items off the top of the stack
+    p = Sptr->params.top();
+    Sptr->params.pop();
+
+    q = Sptr->params.top();
+    Sptr->params.pop();
+
+    r = Sptr->params.top();
+    Sptr->params.pop();
+
+    //push them back in, with the first one now.
+    //previous: p,q,r,  stack...
+    Sptr->params.push(q);
+    Sptr->params.push(p);
+    Sptr->params.push(r);
+
+    //now: q,p,stack...
 
 }
 
