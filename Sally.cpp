@@ -66,6 +66,10 @@ Sally::Sally(istream& input_stream) :
    symtab[">"] = SymTabEntry(KEYWORD, 0, &checkGT);
    symtab[">="] = SymTabEntry(KEYWORD, 0, &checkGTE);
 
+   symtab["SET"] = SymTabEntry(KEYWORD, 0, &doSET);
+   symtab["@"] = SymTabEntry(KEYWORD, 0, &doAT);
+   symtab["!"] = SymTabEntry(KEYWORD, 0, &doEX);
+
 }
 
 
@@ -486,7 +490,7 @@ void Sally::checkEE(Sally *Sptr) {
   Token p1, p2;
 
   if (Sptr->params.size() < 2) {
-    throw out_of_range("Need two parameters for +.");
+    throw out_of_range("Need two parameters for ==");
   }
   p1 = Sptr->params.top();
   Sptr->params.pop();
@@ -503,7 +507,7 @@ void Sally::checkNE(Sally *Sptr) {
   Token p1, p2;
 
   if (Sptr->params.size() < 2) {
-    throw out_of_range("Need two parameters for +.");
+    throw out_of_range("Need two parameters for !=");
   }
   p1 = Sptr->params.top();
   Sptr->params.pop();
@@ -520,7 +524,7 @@ void Sally::checkLT(Sally *Sptr) {
   Token p1, p2;
 
   if (Sptr->params.size() < 2) {
-    throw out_of_range("Need two parameters for +.");
+    throw out_of_range("Need two parameters for <");
   }
   p1 = Sptr->params.top();
   Sptr->params.pop();
@@ -537,7 +541,7 @@ void Sally::checkLTE(Sally *Sptr) {
   Token p1, p2;
 
   if (Sptr->params.size() < 2) {
-    throw out_of_range("Need two parameters for +.");
+    throw out_of_range("Need two parameters for <=");
   }
   p1 = Sptr->params.top();
   Sptr->params.pop();
@@ -554,7 +558,7 @@ void Sally::checkGT(Sally *Sptr) {
   Token p1, p2;
 
   if (Sptr->params.size() < 2) {
-    throw out_of_range("Need two parameters for +.");
+    throw out_of_range("Need two parameters for >");
   }
   p1 = Sptr->params.top();
   Sptr->params.pop();
@@ -570,7 +574,7 @@ void Sally::checkGTE(Sally *Sptr) {
   Token p1, p2;
 
   if (Sptr->params.size() < 2) {
-    throw out_of_range("Need two parameters for +.");
+    throw out_of_range("Need two parameters for >=");
   }
   p1 = Sptr->params.top();
   Sptr->params.pop();
@@ -580,4 +584,95 @@ void Sally::checkGTE(Sally *Sptr) {
   //settling for value since the documentation doesn't mention comparing text
   int answer = (p2.m_value >= p1.m_value);
   Sptr->params.push(Token(INTEGER, answer, ""));
+}
+
+
+void Sally::doSET(Sally *Sptr) {
+  Token p1, p2;
+
+  if (Sptr->params.size() < 2) {
+    throw out_of_range("Need two parameters for SET");
+  }
+
+
+  p1 = Sptr->params.top();
+  Sptr->params.pop();
+  p2 = Sptr->params.top();
+  Sptr->params.pop();
+
+  map<string,SymTabEntry>::iterator it ;
+  it =  Sptr->symtab.find(p1.m_text);
+
+  //if the variable is not already in the symbol table then add it to the symbol table
+  if(it == Sptr->symtab.end()){
+    string newVar = p1.m_text;
+    Sptr->symtab[newVar] = SymTabEntry(VARIABLE,p2.m_value,NULL);
+  }
+  
+  //otherwise say that the variable is already defined
+  else{
+    cout<< "variable: " << p1.m_text<< "has already been set"<< endl;
+  }
+
+}
+
+
+void Sally::doAT(Sally *Sptr) {
+  Token p1 ;
+
+  if (Sptr->params.size() < 1) {
+    throw out_of_range("Need atleast one parameters for @");
+  }
+
+  //get the variable
+  p1 = Sptr->params.top();
+  Sptr->params.pop();
+
+  //make an iterator to search for the variable 
+  map<string,SymTabEntry>::iterator it ;
+  it =  Sptr->symtab.find(p1.m_text);
+  
+  //see if the variable is in the symbol table first, if not print error
+  if(it == Sptr->symtab.end()){
+    cout<< "variable not found"<<endl;
+  }
+
+  //otherwise the item is in the stack and we need to add teh value to the stack
+  Sptr->params.push( Token(INTEGER,it->second.m_value , "") ) ;
+
+}
+
+
+
+void Sally::doEX(Sally *Sptr) {
+  Token p1, p2;
+
+  if (Sptr->params.size() < 2) {
+    throw out_of_range("Need two parameters for !");
+  }
+
+  //get teh variable and the value to set it to
+  p1 = Sptr->params.top();
+  Sptr->params.pop();
+  p2 = Sptr->params.top();
+  Sptr->params.pop();
+
+  //create an iterator to search for the variable
+  map<string,SymTabEntry>::iterator it ;
+  it =  Sptr->symtab.find(p1.m_text);
+
+  //if the variable is not already in the symbol table then add it to the symbol table
+  if(it == Sptr->symtab.end()){
+    cout<< "variable has not been declared yet"<< endl;
+  }
+  
+  //otherwise the variable exists and we can redefine its value
+  else{
+    string newVar = p1.m_text;
+    Sptr->symtab[newVar] = SymTabEntry(VARIABLE,p2.m_value,NULL);
+
+  }
+
+
+
 }

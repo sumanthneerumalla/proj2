@@ -140,7 +140,9 @@ private:
    static void checkGT(Sally *Sptr);
    static void checkGTE(Sally *Sptr);
 
-
+   static void doSET(Sally *Sptr);
+   static void doAT(Sally *Sptr);
+   static void doEX(Sally *Sptr);
 } ;
 
 #endif
