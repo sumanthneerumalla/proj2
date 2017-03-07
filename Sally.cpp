@@ -70,6 +70,10 @@ Sally::Sally(istream& input_stream) :
    symtab["@"] = SymTabEntry(KEYWORD, 0, &doAT);
    symtab["!"] = SymTabEntry(KEYWORD, 0, &doEX);
 
+   symtab["AND"] = SymTabEntry(KEYWORD, 0, &doAND);
+   symtab["OR"] = SymTabEntry(KEYWORD, 0, &doOR);
+   symtab["NOT"] = SymTabEntry(KEYWORD, 0, &doNOT);
+
 }
 
 
@@ -673,6 +677,78 @@ void Sally::doEX(Sally *Sptr) {
 
   }
 
+}
 
+
+void Sally::doAND(Sally *Sptr) {
+  Token p1, p2;
+
+  //ERRORCHECK
+  if (Sptr->params.size() < 2) {
+    throw out_of_range("Need two parameters for AND");
+  }
+
+  p1 = Sptr->params.top();
+  Sptr->params.pop();
+  p2 = Sptr->params.top();
+  Sptr->params.pop();
+
+  //true only if p1 and p2 are true
+  if((p2.m_value == 1) and (p1.m_value == 1)){
+    //push a true onto the stack
+    Sptr->params.push(Token(INTEGER, 1, ""));    
+  }
+  else{
+    //otherwise push a false onto the stack
+      Sptr->params.push(Token(INTEGER, 0, ""));
+  }
 
 }
+
+void Sally::doOR(Sally *Sptr) {
+  Token p1, p2;
+
+  //ERRORCHECK
+  if (Sptr->params.size() < 2) {
+    throw out_of_range("Need two parameters for OR");
+  }
+
+  p1 = Sptr->params.top();
+  Sptr->params.pop();
+  p2 = Sptr->params.top();
+  Sptr->params.pop();
+
+  //false only if p1 and p2 are false
+  if((p2.m_value == 0) and (p1.m_value == 0)){
+    //push a false onto the stack
+    Sptr->params.push(Token(INTEGER, 0, ""));    
+  }
+  else{
+    //otherwise push a true onto the stack
+      Sptr->params.push(Token(INTEGER, 1, ""));
+  }
+
+}
+
+void Sally::doNOT(Sally *Sptr) {
+  Token p1;
+
+  //ERRORCHECK
+  if (Sptr->params.size() < 1) {
+    throw out_of_range("Need atleast one parameters for NOT");
+  }
+
+  p1 = Sptr->params.top();
+  Sptr->params.pop();
+
+  //if p1 = 0 , set to 1
+  if((p1.m_value == 0)){
+    //push a 1 onto the stack
+    Sptr->params.push(Token(INTEGER, 1, ""));    
+  }
+  else{
+    //otherwise push a 0 onto the stack
+      Sptr->params.push(Token(INTEGER, 0, ""));
+  }
+}
+

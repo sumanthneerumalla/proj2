@@ -143,6 +143,11 @@ private:
    static void doSET(Sally *Sptr);
    static void doAT(Sally *Sptr);
    static void doEX(Sally *Sptr);
+
+   static void doAND(Sally *Sptr);
+   static void doOR(Sally *Sptr);
+   static void doNOT(Sally *Sptr);
+
 } ;
 
 #endif
