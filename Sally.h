@@ -133,6 +133,13 @@ private:
    static void doSWAP(Sally *Sptr);
    static void doROT(Sally *Sptr);
 
+   static void checkEE(Sally *Sptr);
+   static void checkNE(Sally *Sptr);
+   static void checkLT(Sally *Sptr);
+   static void checkLTE(Sally *Sptr);
+   static void checkGT(Sally *Sptr);
+   static void checkGTE(Sally *Sptr);
+
 
 } ;
 

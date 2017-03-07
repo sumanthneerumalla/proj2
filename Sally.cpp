@@ -59,7 +59,12 @@ Sally::Sally(istream& input_stream) :
    symtab["SWAP"] = SymTabEntry(KEYWORD, 0, &doSWAP);
    symtab["ROT"] = SymTabEntry(KEYWORD, 0, &doROT);
 
-
+   symtab["=="] = SymTabEntry(KEYWORD, 0, &checkEE);
+   symtab["!="] = SymTabEntry(KEYWORD, 0, &checkNE);
+   symtab["<"] = SymTabEntry(KEYWORD, 0, &checkLT);
+   symtab["<="] = SymTabEntry(KEYWORD, 0, &checkLTE);
+   symtab[">"] = SymTabEntry(KEYWORD, 0, &checkGT);
+   symtab[">="] = SymTabEntry(KEYWORD, 0, &checkGTE);
 
 }
 
@@ -474,4 +479,105 @@ void Sally::doROT(Sally *Sptr) {
 
   //now: q,p,stack...
 
+}
+
+
+void Sally::checkEE(Sally *Sptr) {
+  Token p1, p2;
+
+  if (Sptr->params.size() < 2) {
+    throw out_of_range("Need two parameters for +.");
+  }
+  p1 = Sptr->params.top();
+  Sptr->params.pop();
+  p2 = Sptr->params.top();
+  Sptr->params.pop();
+
+  //should i check for text or value here?
+  //settling for value since the documentation doesn't mention comparing text
+  int answer = (p2.m_value == p1.m_value);
+  Sptr->params.push(Token(INTEGER, answer, ""));
+}
+
+void Sally::checkNE(Sally *Sptr) {
+  Token p1, p2;
+
+  if (Sptr->params.size() < 2) {
+    throw out_of_range("Need two parameters for +.");
+  }
+  p1 = Sptr->params.top();
+  Sptr->params.pop();
+  p2 = Sptr->params.top();
+  Sptr->params.pop();
+
+  //should i check for text or value here?
+  //settling for value since the documentation doesn't mention comparing text
+  int answer = (p2.m_value != p1.m_value);
+  Sptr->params.push(Token(INTEGER, answer, ""));
+}
+
+void Sally::checkLT(Sally *Sptr) {
+  Token p1, p2;
+
+  if (Sptr->params.size() < 2) {
+    throw out_of_range("Need two parameters for +.");
+  }
+  p1 = Sptr->params.top();
+  Sptr->params.pop();
+  p2 = Sptr->params.top();
+  Sptr->params.pop();
+
+
+  //settling for value since the documentation doesn't mention comparing text
+  int answer = (p2.m_value < p1.m_value);
+  Sptr->params.push(Token(INTEGER, answer, ""));
+}
+
+void Sally::checkLTE(Sally *Sptr) {
+  Token p1, p2;
+
+  if (Sptr->params.size() < 2) {
+    throw out_of_range("Need two parameters for +.");
+  }
+  p1 = Sptr->params.top();
+  Sptr->params.pop();
+  p2 = Sptr->params.top();
+  Sptr->params.pop();
+
+  //settling for value since the documentation doesn't mention comparing text
+  int answer = (p2.m_value <= p1.m_value);
+  Sptr->params.push(Token(INTEGER, answer, ""));
+}
+
+
+void Sally::checkGT(Sally *Sptr) {
+  Token p1, p2;
+
+  if (Sptr->params.size() < 2) {
+    throw out_of_range("Need two parameters for +.");
+  }
+  p1 = Sptr->params.top();
+  Sptr->params.pop();
+  p2 = Sptr->params.top();
+  Sptr->params.pop();
+
+  //settling for value since the documentation doesn't mention comparing text
+  int answer = (p2.m_value > p1.m_value);
+  Sptr->params.push(Token(INTEGER, answer, ""));
+}
+
+void Sally::checkGTE(Sally *Sptr) {
+  Token p1, p2;
+
+  if (Sptr->params.size() < 2) {
+    throw out_of_range("Need two parameters for +.");
+  }
+  p1 = Sptr->params.top();
+  Sptr->params.pop();
+  p2 = Sptr->params.top();
+  Sptr->params.pop();
+
+  //settling for value since the documentation doesn't mention comparing text
+  int answer = (p2.m_value >= p1.m_value);
+  Sptr->params.push(Token(INTEGER, answer, ""));
 }
