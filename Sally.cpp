@@ -77,8 +77,12 @@ Sally::Sally(istream& input_stream) :
    symtab["IFTHEN"] = SymTabEntry(KEYWORD, 0, &doIFTHEN);
    symtab["ELSE"] = SymTabEntry(KEYWORD, 0, &doELSE);
    symtab["ENDIF"] = SymTabEntry(KEYWORD, 0, &doENDIF);
+
+   symtab["DO"] = SymTabEntry(KEYWORD, 0, &doDO);
+   symtab["UNTIL"] = SymTabEntry(KEYWORD, 0, &doUNTIL);
  
 }
+
 
 
 // This function should be called when tkBuffer is empty.
@@ -242,7 +246,9 @@ void Sally::mainLoop() {
    try {
       while( 1 ) {
          tk = nextToken() ;
-
+	 if (recorder == true){
+	   myList.push_back(tk);
+	 }
          if (tk.m_kind == INTEGER || tk.m_kind == STRING) {
 
             // if INTEGER or STRING just push onto stack
@@ -769,7 +775,7 @@ void Sally::doIFTHEN(Sally *Sptr) {
 
   //these were added in order to handle for nested ifthens
   bool notDone = true;
-  int myCounter;
+  int myCounter = 0;
 
   //if true
   if((p1.m_value != 0)){
@@ -810,27 +816,48 @@ void Sally::doELSE(Sally *Sptr) {
 
   //this means we just consume tokens until the next endif
   
-  //these were added in order to handle for nested content in elses
-  bool notDone = true;
-  int myCounter;
-  
   Token tk = Token(INTEGER, 0, "");
     
-    
     //consume tokens until endif
-    while(notDone){
+    while(tk.m_text != "ENDIF"){
       
       tk = Sptr->nextToken();
       
-      if(tk.m_text == "IFTHEN"){
-	myCounter++;
-      }
-      else if( tk.m_text == "ELSE"){
-	myCounter--;
-      }
-      if(myCounter<0){
-	notDone = false;
-      }
     }
-  //once the while loop stops running, it means we passed enough matching elses
+ //once the while loop stops running, it means we have consumed a matching endif
+//and we can return to the main loop
+
+}
+ 
+
+void Sally::doENDIF(Sally *Sptr) {
+  //we do nothing
+}
+
+
+
+void Sally::doDO(Sally *Sptr) {
+  //commented this out since it wasn't working
+  //  recorder = true;
+  
+}
+
+void Sally::doUNTIL(Sally *Sptr) {
+
+  //commented this out since it wasn't working
+  /*
+
+  if (recorder == true){
+
+    return;
+
+  }
+  else {
+    list<Token>::iterator litr;
+
+    litr = Sptr->tkBuffer.begin();
+
+    Sptr->tkBuffer.splice(litr, Sptr->myList);
+  }
+  */
 }
