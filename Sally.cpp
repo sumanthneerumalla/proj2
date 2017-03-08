@@ -74,6 +74,10 @@ Sally::Sally(istream& input_stream) :
    symtab["OR"] = SymTabEntry(KEYWORD, 0, &doOR);
    symtab["NOT"] = SymTabEntry(KEYWORD, 0, &doNOT);
 
+   symtab["IFTHEN"] = SymTabEntry(KEYWORD, 0, &doIFTHEN);
+   symtab["ELSE"] = SymTabEntry(KEYWORD, 0, &doELSE);
+   symtab["ENDIF"] = SymTabEntry(KEYWORD, 0, &doENDIF);
+ 
 }
 
 
@@ -752,3 +756,81 @@ void Sally::doNOT(Sally *Sptr) {
   }
 }
 
+void Sally::doIFTHEN(Sally *Sptr) {
+  Token p1;
+
+  //ERRORCHECK
+  if (Sptr->params.size() < 1) {
+    throw out_of_range("Need atleast one parameter for IFTHEN");
+  }
+
+  p1 = Sptr->params.top();
+  Sptr->params.pop();
+
+  //these were added in order to handle for nested ifthens
+  bool notDone = true;
+  int myCounter;
+
+  //if true
+  if((p1.m_value != 0)){
+    return;
+    //this way we continue to the rest of the code
+  }
+  else{
+    //otherwise we continue popping off the stack until we hit else
+    Token tk = Token(INTEGER, 0, "");
+      
+
+    //loop until done
+    while(notDone){
+
+      tk = Sptr->nextToken();
+    
+      if(tk.m_text == "IFTHEN"){
+	myCounter++;
+	}
+      else if( tk.m_text == "ELSE"){
+	myCounter--;
+      }
+      if(myCounter<0){
+	notDone = false;
+      }
+    }
+
+  }
+  //once the while loop stops running, it means we passed enough matching elses
+}
+
+
+
+void Sally::doELSE(Sally *Sptr) {
+  
+  //if we actually encounter an else, it means that the IFTHEN has already
+  //executed.
+
+  //this means we just consume tokens until the next endif
+  
+  //these were added in order to handle for nested content in elses
+  bool notDone = true;
+  int myCounter;
+  
+  Token tk = Token(INTEGER, 0, "");
+    
+    
+    //consume tokens until endif
+    while(notDone){
+      
+      tk = Sptr->nextToken();
+      
+      if(tk.m_text == "IFTHEN"){
+	myCounter++;
+      }
+      else if( tk.m_text == "ELSE"){
+	myCounter--;
+      }
+      if(myCounter<0){
+	notDone = false;
+      }
+    }
+  //once the while loop stops running, it means we passed enough matching elses
+}

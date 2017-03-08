@@ -148,6 +148,13 @@ private:
    static void doOR(Sally *Sptr);
    static void doNOT(Sally *Sptr);
 
+   static void doIFTHEN(Sally *Sptr);
+   static void doELSE(Sally *Sptr);
+   static void doENDIF(Sally *Sptr);
+ 
+
+
+
 } ;
 
 #endif
