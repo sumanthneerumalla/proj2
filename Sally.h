@@ -14,6 +14,7 @@
 #include <stack>
 #include <map>
 #include <stdexcept>
+#include <vector>
 using namespace std ;
 
 
@@ -157,6 +158,8 @@ private:
 
    bool recorder;
    list<Token> myList;
+   vector<list<Token> > toDoList;//haha lol
+   int DoTracker;
 
 } ;
 

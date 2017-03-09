@@ -80,7 +80,8 @@ Sally::Sally(istream& input_stream) :
 
    symtab["DO"] = SymTabEntry(KEYWORD, 0, &doDO);
    symtab["UNTIL"] = SymTabEntry(KEYWORD, 0, &doUNTIL);
- 
+
+   recorder = false;
 }
 
 
@@ -219,6 +220,8 @@ Token Sally::nextToken() {
       Token tk ;
       bool more = true ;
 
+      
+
       while(more && tkBuffer.empty() ) {
          more = fillBuffer() ;
       }
@@ -227,7 +230,13 @@ Token Sally::nextToken() {
          throw EOProgram("End of Program") ;
       }
 
+      
       tk = tkBuffer.front() ;
+      
+      if(recorder ==true){
+	toDoList[toDoList.size()-1].push_back(tk);
+      }
+
       tkBuffer.pop_front() ;
       return tk ;
 }
@@ -246,9 +255,6 @@ void Sally::mainLoop() {
    try {
       while( 1 ) {
          tk = nextToken() ;
-	 if (recorder == true){
-	   myList.push_back(tk);
-	 }
          if (tk.m_kind == INTEGER || tk.m_kind == STRING) {
 
             // if INTEGER or STRING just push onto stack
@@ -831,33 +837,47 @@ void Sally::doELSE(Sally *Sptr) {
  
 
 void Sally::doENDIF(Sally *Sptr) {
-  //we do nothing
+  //do nothing here
 }
 
 
 
 void Sally::doDO(Sally *Sptr) {
-  //commented this out since it wasn't working
-  //  recorder = true;
+  //set recording to true and clear the old list in case a previous loop
+  //happened
+
+  Sptr->recorder = true;
+
+  list<Token> anotherList;
+
+  Sptr-> toDoList.push_back(anotherList);
   
+
 }
 
 void Sally::doUNTIL(Sally *Sptr) {
 
-  //commented this out since it wasn't working
-  /*
+  Token t1;
 
-  if (recorder == true){
+  t1 = Sptr->params.top();
+  Sptr->params.pop();
 
-    return;
+  //we continue the loop while the previous variable is false
+  if(t1.m_value == 0){
+
+    //if we need to do the loop again we put the contents of the list into 
+    //the beginning of the buffer
+    Sptr->tkBuffer.splice(Sptr->tkBuffer.begin(), Sptr->toDoList[Sptr->toDoList.size()-1]);
 
   }
-  else {
-    list<Token>::iterator litr;
+  else{
 
-    litr = Sptr->tkBuffer.begin();
+    Sptr->toDoList.pop_back();
 
-    Sptr->tkBuffer.splice(litr, Sptr->myList);
+    if(Sptr->toDoList.size() ==0){
+    Sptr->recorder = false;
+    }
   }
-  */
+
+
 }
